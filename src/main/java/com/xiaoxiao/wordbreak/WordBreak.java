@@ -19,7 +19,7 @@ public class WordBreak {
         });
     }
 
-    Set<String> orignDictionary = new HashSet<>();
+    Set<String> originDictionary = new HashSet<>();
 
     Set<Word> wordSet = new HashSet<>();
 
@@ -33,7 +33,7 @@ public class WordBreak {
             for (int i = 0; i < splits.length; i++) {
                 String split = splits[i];
                 split = split.trim();
-                orignDictionary.add(split);
+                originDictionary.add(split);
             }
             for (int i = 0; i < splits.length; i++) {
                 String split = splits[i];
@@ -88,7 +88,7 @@ public class WordBreak {
             for (int j = test.length() - 1; j >= i + 1; j--) {
                 String word1 = test.substring(i, j);
                 String word2 = test.substring(j);
-                if (orignDictionary.contains(word1) && orignDictionary.contains(word2)) {
+                if (originDictionary.contains(word1) && originDictionary.contains(word2)) {
                     test = test.substring(j);
                     results.add(new Word(word1));
                     results.add(new Word(word2));
