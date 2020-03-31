@@ -1,5 +1,9 @@
 package com.xiaoxiao.wordbreak;
 
+import com.xiaoxiao.wordbreak.entity.SeparatedWord;
+import com.xiaoxiao.wordbreak.entity.TreeWord;
+import com.xiaoxiao.wordbreak.entity.Word;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
