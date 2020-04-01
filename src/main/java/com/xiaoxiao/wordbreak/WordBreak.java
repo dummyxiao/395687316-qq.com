@@ -16,7 +16,7 @@ public class WordBreak {
 
     public static void main(String[] args) {
         WordBreak wordBreak = new WordBreak("{ i, like, sam, sung, samsung, mobile}","{ ice, cream, man go}");
-        String test = "ilikesamsungmobile";
+        String test = "ilikesamorsungicecreamandmango";
         List<LinkedList<Word>> result = wordBreak.separateSentence(test);
         result.forEach(s -> {
             s.stream().forEach(f -> System.out.printf(f.getWord() + " "));
@@ -59,30 +59,44 @@ public class WordBreak {
     public List<LinkedList<Word>> separateSentence(String test){
         String testCopy = test;
         boolean find;
+        int indexStart = 0;
+        int indexEnd = 0;
+        ArrayList<String> notFindWord = new ArrayList<>();
         StringBuffer sb = new StringBuffer("");
         do {
             find = false;
             for (int i = 0; i < test.length() - 1; i++) {
                 for (int j = test.length(); j >= i + 1; j--) {
                     String word = test.substring(i, j);
-                    boolean b = testWords(word,testCopy.indexOf(word));
+                    int k = testCopy.indexOf(word);
+                    boolean b = testWords(word,k);
                     if (b) {
                         test = test.substring(j);
                         find = true;
+                        indexStart += word.length();
                         break;
                     }
                 }
                 if (find) {
                     break;
                 }else {
-                    //todo
-                    sb.append(test.substring(sb.length(),sb.length()+1));
+                    if (indexStart!=indexEnd) {
+                        notFindWord.add(sb.toString());
+                        sb.delete(0,sb.length());
+                        sb.append(testCopy.substring(indexStart,++indexStart));
+                        indexEnd = indexStart;
+                    }else {
+                        sb.append(testCopy.substring(indexStart,++indexStart));
+                        indexEnd = indexStart;
+                    }
                 }
             }
         } while (find);
 
-        addNotfindWord(sb.toString(),testCopy.indexOf(sb.toString()));
-
+        notFindWord.add(sb.toString());
+        for (String w:notFindWord) {
+            addNotfindWord(w, testCopy.indexOf(w));
+        }
         return result;
     }
 
