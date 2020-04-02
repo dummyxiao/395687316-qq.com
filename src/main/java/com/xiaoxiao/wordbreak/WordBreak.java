@@ -15,15 +15,7 @@ import java.util.stream.Collectors;
 public class WordBreak {
 
 
-    public static void main(String[] args) {
-        WordBreak wordBreak = new WordBreak("{ i, like, sam, sung, samsung, mobile}", "{ ice, cream, man go}");
-        String test = "ilikesamsungoricecreamandmangohh";
-        List<Sentence> sentences = wordBreak.separateSentence(test);
-        sentences.stream().forEach(sentence -> {
-            System.out.println(sentence.toString());
-        });
-
-    }
+ 
 
     private Set<String> originDictionary;
 
