@@ -18,7 +18,16 @@ public class Sentence implements Cloneable{
     }
 
     public void addWord(Word word) {
-        this.words.addLast(word);
+        if (word instanceof SeparatedWord){
+            List<Word> children = ((SeparatedWord) word).getChildren();
+            String collect = children.stream()
+                    .map(Word::getWord)
+                    .collect(Collectors.joining(" "));
+            this.words.addLast(new Word(collect));
+        }else {
+            this.words.addLast(word);
+        }
+
     }
 
     public static Sentence createSentence(){
@@ -32,15 +41,6 @@ public class Sentence implements Cloneable{
         return sentence;
     }
 
-
-    public LinkedList<Word> getWords() {
-        return words;
-    }
-
-    public void setWords(LinkedList<Word> words) {
-        this.words = words;
-    }
-
     public static List<Sentence> copySentence(List<Sentence> sentenceList,TreeWord treeWord){
         List<Sentence> resultCopy = new ArrayList<>();
         for (Sentence s : sentenceList) {
@@ -49,11 +49,24 @@ public class Sentence implements Cloneable{
             s.addWord(treeWord);
             resultCopy.add(s);
 
-            for (Word word : treeWord.getChildren()) {
+            List<TreeWord> children = treeWord.getChildren();
+            for (int i=0;i<children.size();i++){
+                TreeWord word = children.get(i);
+                int last = children.size() - 1;
+                if (last == i) {
+                    TreeWord lastWord = children.get(last);
+                    lastWord.setIndex(treeWord.getIndex());
+                    children.remove(treeWord.getChildren().get(last));
+                    children.add(lastWord);
+                    word = lastWord;
+                }
+                word.setParent(treeWord);
                 copyR.addWord(word);
             }
+
             resultCopy.add(copyR);
         }
+
         return resultCopy;
     }
 
@@ -73,5 +86,13 @@ public class Sentence implements Cloneable{
     @Override
     public String toString() {
        return words.stream().map(Word::getWord).collect(Collectors.joining(" "));
+    }
+
+    public LinkedList<Word> getWords() {
+        return words;
+    }
+
+    public void setWords(LinkedList<Word> words) {
+        this.words = words;
     }
 }

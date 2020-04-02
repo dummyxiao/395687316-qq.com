@@ -8,12 +8,20 @@ import java.util.List;
  */
 public class TreeWord extends Word {
 
-    private List<Word> children;
-    public TreeWord(String word,List<Word> children) {
+    private TreeWord parent;
+    private List<TreeWord> children;
+
+    public TreeWord(String word,TreeWord parent,List<TreeWord> children) {
         super(word);
         this.children = children;
+        this.parent = parent;
+        if (parent!=null&&children!=null) {
+            for (TreeWord treeWord : children) {
+                treeWord.setParent(parent);
+            }
+        }
     }
-    public TreeWord(String word, int index,List<Word> children) {
+    public TreeWord(String word, int index,List<TreeWord> children) {
         super(word,index);
         this.children = children;
     }
@@ -29,11 +37,22 @@ public class TreeWord extends Word {
         return false;
     }
 
-    public List<Word> getChildren() {
+    public TreeWord getParent() {
+        if (parent == null){
+            return this;
+        }
+        return parent;
+    }
+
+    public void setParent(TreeWord parent) {
+        this.parent = parent;
+    }
+
+    public List<TreeWord> getChildren() {
         return children;
     }
 
-    public void setChildren(List<Word> children) {
+    public void setChildren(List<TreeWord> children) {
         this.children = children;
     }
 }

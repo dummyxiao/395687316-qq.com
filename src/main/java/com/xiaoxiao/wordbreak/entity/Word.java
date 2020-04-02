@@ -8,6 +8,9 @@ package com.xiaoxiao.wordbreak.entity;
 public class Word {
     private int index;
     private String word;
+    public Word(){
+
+    }
     public Word(String word) {
         this.word = word;
     }

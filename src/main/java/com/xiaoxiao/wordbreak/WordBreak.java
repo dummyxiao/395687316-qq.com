@@ -17,7 +17,7 @@ public class WordBreak {
 
     public static void main(String[] args) {
         WordBreak wordBreak = new WordBreak("{ i, like, sam, sung, samsung, mobile}", "{ ice, cream, man go}");
-        String test = "ilikesamsungicecreamandmango";
+        String test = "ilikesamsungoricecreamandmangohh";
         List<Sentence> sentences = wordBreak.separateSentence(test);
         sentences.stream().forEach(sentence -> {
             System.out.println(sentence.toString());
@@ -56,9 +56,9 @@ public class WordBreak {
                 String split = splits[i];
                 split = split.trim();
                 Word word = new Word(split);
-                List<Word> children = findCompositeWord(split);
+                List<TreeWord> children = findCompositeWord(split);
                 if (children.size() > 1) {
-                    word = new TreeWord(split, children);
+                    word = new TreeWord(split,null,children);
                 }
                 List<Word> separateWord = findSeparatedWord(split);
                 if (separateWord.size() > 1) {
@@ -73,14 +73,12 @@ public class WordBreak {
         String testCopy = noSpaceSentence;
         boolean find;
         int indexNow = 0;
-
+        int indexStart = indexNow;
         ArrayList<String> notFindWord = new ArrayList<>();
         StringBuffer sb = new StringBuffer("");
         do {
             find = false;
             for (int i = 0; i < noSpaceSentence.length() - 1; i++) {
-
-                int indexStart = indexNow;
 
                 for (int j = noSpaceSentence.length(); j >= i + 1; j--) {
                     String word = noSpaceSentence.substring(i, j);
@@ -103,6 +101,7 @@ public class WordBreak {
                     } else {
                         sb.append(testCopy.substring(indexNow, ++indexNow));
                     }
+                    indexStart = indexNow;
                 }
             }
         } while (find);
@@ -114,16 +113,16 @@ public class WordBreak {
         return sentenceList;
     }
 
-    private List<Word> findCompositeWord(String test) {
-        List<Word> results = new LinkedList<>();
-        for (int i = 0; i < test.length() - 1; i++) {
-            for (int j = test.length() - 1; j >= i + 1; j--) {
-                String word1 = test.substring(i, j);
-                String word2 = test.substring(j);
+    private List<TreeWord> findCompositeWord(String words) {
+        List<TreeWord> results = new LinkedList<>();
+        for (int i = 0; i < words.length() - 1; i++) {
+            for (int j = words.length() - 1; j >= i + 1; j--) {
+                String word1 = words.substring(i, j);
+                String word2 = words.substring(j);
                 if (originDictionary.contains(word1) && originDictionary.contains(word2)) {
-                    test = test.substring(j);
-                    results.add(new Word(word1));
-                    results.add(new Word(word2));
+                    words = words.substring(j);
+                    results.add(new TreeWord(word1,null,null));
+                    results.add(new TreeWord(word2,null,null));
                 }
             }
         }
@@ -191,14 +190,19 @@ public class WordBreak {
         }
     }
 
-    private void addNotfindWord(String test, int index) {
-        System.out.println();
+    private void addNotfindWord(String notfindWord, int index) {
+
         sentenceList = sentenceList.stream().map(sentence -> {
+
             ListIterator<Word> iterator = sentence.getWords().listIterator();
             while (iterator.hasNext()) {
                 Word next = iterator.next();
-                if ((next.getIndex() + next.getWord().length()) == index) {
-                    iterator.add(new Word(test, index));
+                int l = (next.getIndex() + next.getWord().length());
+                if (next instanceof TreeWord){
+                    l = (next.getIndex() + ((TreeWord) next).getParent().getWord().length());
+                }
+                if ( l == index) {
+                    iterator.add(new Word(notfindWord, index));
                 }
             }
             return sentence;

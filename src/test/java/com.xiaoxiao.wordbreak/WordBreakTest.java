@@ -32,7 +32,7 @@ public class WordBreakTest {
         String test = "ilikeicecreamandmango";
         List<Sentence> sentences = wordBreak.separateSentence(test);
         Sentence sentence = sentences.get(0);
-        assert "i like ice cream and mango".equals(sentence.toString());
+        assert "i like ice cream and man go".equals(sentence.toString());
         System.out.println(sentence.toString());
     }
 
@@ -74,5 +74,17 @@ public class WordBreakTest {
         System.out.println(sentence2.toString());
     }
 
-
+    @Test
+    public void test5(){
+        WordBreak wordBreak = new WordBreak("{ i, like, sam, sung, samsung, mobile}", "{ ice, cream, man go}");
+        wordBreak.setWordSet("samsung, mobile");
+        String test = "ilikesamsungoricecreamandmango";
+        List<Sentence> sentences = wordBreak.separateSentence(test);
+        Sentence sentence1 = sentences.get(0);
+        assert "i like samsung or ice cream and man go".equals(sentence1.toString());
+        System.out.println(sentence1.toString());
+        Sentence sentence2 = sentences.get(1);
+        assert "i like sam sung or ice cream and man go".equals(sentence2.toString());
+        System.out.println(sentence2.toString());
+    }
 }
