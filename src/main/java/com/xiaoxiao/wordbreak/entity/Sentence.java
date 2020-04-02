@@ -1,6 +1,9 @@
 package com.xiaoxiao.wordbreak.entity;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author xiaobenneng@hotmail.com
@@ -10,7 +13,7 @@ public class Sentence implements Cloneable{
 
     private LinkedList<Word> words;
 
-    public Sentence(){
+    private Sentence(){
         this.words = new LinkedList<>();
     }
 
@@ -18,7 +21,12 @@ public class Sentence implements Cloneable{
         this.words.addLast(word);
     }
 
-    public static Sentence cretaSentence(Word word){
+    public static Sentence createSentence(){
+        Sentence sentence = new Sentence();
+        return sentence;
+    }
+
+    public static Sentence createSentence(Word word){
         Sentence sentence = new Sentence();
         sentence.addWord(word);
         return sentence;
@@ -33,6 +41,22 @@ public class Sentence implements Cloneable{
         this.words = words;
     }
 
+    public static List<Sentence> copySentence(List<Sentence> sentenceList,TreeWord treeWord){
+        List<Sentence> resultCopy = new ArrayList<>();
+        for (Sentence s : sentenceList) {
+            Sentence copyR = (Sentence) s.clone();
+
+            s.addWord(treeWord);
+            resultCopy.add(s);
+
+            for (Word word : treeWord.getChildren()) {
+                copyR.addWord(word);
+            }
+            resultCopy.add(copyR);
+        }
+        return resultCopy;
+    }
+
     @Override
     public Object clone() {
         Sentence sentence = null;
@@ -44,5 +68,10 @@ public class Sentence implements Cloneable{
             e.printStackTrace();
         }
             return sentence;
+    }
+
+    @Override
+    public String toString() {
+       return words.stream().map(Word::getWord).collect(Collectors.joining(" "));
     }
 }

@@ -19,23 +19,31 @@ public class WordBreak {
         WordBreak wordBreak = new WordBreak("{ i, like, sam, sung, samsung, mobile}", "{ ice, cream, man go}");
         String test = "ilikesamsungicecreamandmango";
         List<Sentence> sentences = wordBreak.separateSentence(test);
-        for (Sentence s:sentences){
-            s.getWords().stream().forEach(w->{
-                System.out.printf(w.getWord()+" ");
-            });
-            System.out.println();
-        }
+        sentences.stream().forEach(sentence -> {
+            System.out.println(sentence.toString());
+        });
 
     }
 
-    Set<String> originDictionary = new HashSet<>();
+    private Set<String> originDictionary;
 
-    Set<Word> wordSet = new HashSet<>();
+    private Set<Word> wordSet;
 
-    List<Sentence> sentenceList = new ArrayList<>();
+    private List<Sentence> sentenceList;
 
+    public WordBreak(){
+        this.originDictionary = new HashSet<>();
+        this.wordSet = new HashSet<>();
+        this.sentenceList = new ArrayList<>();
+    }
+    
     public WordBreak(String... wordsArr) {
+        this();
         for (String words : wordsArr) {
+            setWordSet(words);
+        }
+    }
+    public void setWordSet(String words){
             words = words.replaceAll("\\{", "");
             words = words.replaceAll("}", "");
             String[] splits = words.split(",");
@@ -58,41 +66,42 @@ public class WordBreak {
                 }
                 wordSet.add(word);
             }
-        }
+
     }
 
-    public List<Sentence> separateSentence(String test) {
-        String testCopy = test;
+    public List<Sentence> separateSentence(String noSpaceSentence) {
+        String testCopy = noSpaceSentence;
         boolean find;
-        int indexStart = 0;
-        int indexEnd = 0;
+        int indexNow = 0;
+
         ArrayList<String> notFindWord = new ArrayList<>();
         StringBuffer sb = new StringBuffer("");
         do {
             find = false;
-            for (int i = 0; i < test.length() - 1; i++) {
-                for (int j = test.length(); j >= i + 1; j--) {
-                    String word = test.substring(i, j);
+            for (int i = 0; i < noSpaceSentence.length() - 1; i++) {
+
+                int indexStart = indexNow;
+
+                for (int j = noSpaceSentence.length(); j >= i + 1; j--) {
+                    String word = noSpaceSentence.substring(i, j);
                     int k = testCopy.indexOf(word);
-                    boolean b = testWords(word, k);
-                    if (b) {
-                        test = test.substring(j);
-                        find = true;
-                        indexStart += word.length();
+                    find = testWords(word, k);
+                    if (find) {
+                        noSpaceSentence = noSpaceSentence.substring(j);
+                        indexNow += word.length();
                         break;
                     }
                 }
+
                 if (find) {
                     break;
                 } else {
-                    if (indexStart != indexEnd) {
+                    if (indexNow != indexStart) {
                         notFindWord.add(sb.toString());
                         sb.delete(0, sb.length());
-                        sb.append(testCopy.substring(indexStart, ++indexStart));
-                        indexEnd = indexStart;
+                        sb.append(testCopy.substring(indexNow, ++indexNow));
                     } else {
-                        sb.append(testCopy.substring(indexStart, ++indexStart));
-                        indexEnd = indexStart;
+                        sb.append(testCopy.substring(indexNow, ++indexNow));
                     }
                 }
             }
@@ -105,7 +114,7 @@ public class WordBreak {
         return sentenceList;
     }
 
-    public List<Word> findCompositeWord(String test) {
+    private List<Word> findCompositeWord(String test) {
         List<Word> results = new LinkedList<>();
         for (int i = 0; i < test.length() - 1; i++) {
             for (int j = test.length() - 1; j >= i + 1; j--) {
@@ -121,7 +130,7 @@ public class WordBreak {
         return results;
     }
 
-    public List<Word> findSeparatedWord(String test) {
+    private List<Word> findSeparatedWord(String test) {
         List<Word> results = new LinkedList<>();
         String[] sArr = test.split(" ");
         if (sArr.length > 1) {
@@ -133,7 +142,7 @@ public class WordBreak {
         return results;
     }
 
-    public boolean testWords(String test, int index) {
+    private boolean testWords(String test, int index) {
         Word word = new Word(test);
         boolean b = false;
         for (Word word1 : wordSet) {
@@ -153,7 +162,7 @@ public class WordBreak {
         }
 
         if (sentenceList.size() == 0) {
-            Sentence sentence = Sentence.cretaSentence(word);
+            Sentence sentence = Sentence.createSentence(word);
             sentenceList.add(sentence);
         } else {
             final Word w = word;
@@ -168,34 +177,21 @@ public class WordBreak {
     private void addTreeWord(TreeWord treeWord) {
 
         if (sentenceList.size() == 0) {
-            Sentence sentence = new Sentence();
-            sentence.addWord(treeWord);
+            Sentence sentence = Sentence.createSentence(treeWord);
             sentenceList.add(sentence);
 
-            Sentence sentence2 = new Sentence();
+            Sentence sentence2 = Sentence.createSentence();
             for (Word word : treeWord.getChildren()) {
                 sentence2.addWord(word);
             }
             sentenceList.add(sentence2);
 
         } else {
-            List<Sentence> resultCopy = new ArrayList<>();
-            for (Sentence s : sentenceList) {
-                Sentence copyR = (Sentence) s.clone();
-
-                s.addWord(treeWord);
-                resultCopy.add(s);
-
-                for (Word word : treeWord.getChildren()) {
-                    copyR.addWord(word);
-                }
-                resultCopy.add(copyR);
-            }
-            sentenceList = resultCopy;
+            sentenceList = Sentence.copySentence(sentenceList,treeWord);
         }
     }
 
-    public void addNotfindWord(String test, int index) {
+    private void addNotfindWord(String test, int index) {
         System.out.println();
         sentenceList = sentenceList.stream().map(sentence -> {
             ListIterator<Word> iterator = sentence.getWords().listIterator();
